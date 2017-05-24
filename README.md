@@ -10,4 +10,4 @@ A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public tran
 
 ## Contributing
 
-Feel free to fork, open issues or open pull requests.
+Feel free to fork, report issues or open pull requests.
