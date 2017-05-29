@@ -22,25 +22,30 @@ if (isset($chatId)) {
       sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.');
       break;
     case '/contact':
-      sendMsg($contactChatId, $inputMsg);
+      if (count(explode(' ', $inputMsg)) == 1)
+        sendMsg($chatId, 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.'Zum Beispiel'.PHP_EOL.'/contact Cooler Bot Manni ;)');
+      else {
+        sendMsg($contactChatId, $inputMsg);
+        sendMsg($chatId, 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni');
+      }//else
+      break;
     default:
+      $possibleStations = getStations($inputMsg);
+      if ($debug) sendMsg($chatId, 'count($possibleStations) '.count($possibleStations));
+      if (count($possibleStations) > 1) {
+        for ($i=0; $i<count($possibleStations); $i++) {
+          if ($debug) sendMsg($chatId, 'text '.$possibleStations[$i][1].PHP_EOL.'callback_data /short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1]));
+          //$but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short HBF Hauptbahnhof'));
+          $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
+        }
+        inlineKeys($but, $chatId, 'Meinten Sie?');
+      }//if
+      else {
+        if ($debug) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$possibleStations[0][0] '.$possibleStations[0][0].PHP_EOL.'$possibleStations[0][1] '.$possibleStations[0][1]);
+        printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
+      }//else
+      break;
   }//switch
-  else {
-    $possibleStations = getStations($inputMsg);
-    if ($debug) sendMsg($chatId, 'count($possibleStations) '.count($possibleStations));
-    if (count($possibleStations) > 1) {
-      for ($i=0; $i<count($possibleStations); $i++) {
-        if ($debug) sendMsg($chatId, 'text '.$possibleStations[$i][1].PHP_EOL.'callback_data /short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1]));
-        //$but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short HBF Hauptbahnhof'));
-        $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
-      }
-      inlineKeys($but, $chatId, 'Meinten Sie?');
-    }//if
-    else {
-      if ($debug) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$possibleStations[0][0] '.$possibleStations[0][0].PHP_EOL.'$possibleStations[0][1] '.$possibleStations[0][1]);
-      printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
-    }
-  }
 }//if
 
 if($input['callback_query']) {
