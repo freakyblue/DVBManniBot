@@ -8,6 +8,7 @@
   $chatId = $input['message']['chat']['id'];
   $inputMsg = $input['message']['text'];
   $senderFirstName = $input['message']['from']['first_name'];
+  $senderUsername = $input['message']['from']['username'];
   $callbackId = $input['callback_query']['from']['id'];
   $callbackData = $input['callback_query']['data'];
 
@@ -25,7 +26,7 @@ if (isset($chatId)) {
       if (count(explode(' ', $inputMsg)) == 1)
         sendMsg($chatId, 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.'Zum Beispiel'.PHP_EOL.'/contact Cooler Bot Manni ;)');
       else {
-        sendMsg($contactChatId, $inputMsg);
+        sendMsg($contactChatId, 'from @'.$senderUsername.PHP_EOL.$inputMsg);
         sendMsg($chatId, 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni');
       }//else
       break;
