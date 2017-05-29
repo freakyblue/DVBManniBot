@@ -14,8 +14,17 @@
 if (isset($chatId)) {
   if ($debug) sendMsg($chatId, '$chatId is set');
   if (!$debug) update($chatId);
-  if (explode(' ', $inputMsg)[0] == '/station') sendMsg($chatId, '/station wird nicht länger gebraucht, tippe einfach den Haltestellennamen ohne Zusatz ein.');
-  if (explode(' ', $inputMsg)[0] == '/start') sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.');
+  switch (explode(' ', $inputMsg)[0]) {
+    case '/station':
+      sendMsg($chatId, '/station wird nicht länger gebraucht, tippe einfach den Haltestellennamen ohne Zusatz ein.');
+      break;
+    case '/start':
+      sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.');
+      break;
+    case '/contact':
+      sendMsg($contactChatId, $inputMsg);
+    default:
+  }//switch
   else {
     $possibleStations = getStations($inputMsg);
     if ($debug) sendMsg($chatId, 'count($possibleStations) '.count($possibleStations));
@@ -37,14 +46,12 @@ if (isset($chatId)) {
 if($input['callback_query']) {
   $command = explode(' ', $callbackData)[0];
   $arg1 = explode(' ', $callbackData)[1];
-  $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4]; //@TODO: allow args with whitespace
+  $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4];
   if ($debug) sendMsg($callbackId, $callbackData.PHP_EOL.'command '.$command.PHP_EOL.'arg1 '.$arg1.PHP_EOL.'arg2 '.$arg2);
   if($command == '/short') printResult($callbackId, $arg1, $arg2);
 }//if
 
 function printResult ($chatId, $short, $long) {
-  //$short = decBug($short);
-  //$long = decBug($long);
   if ($GLOBALS[debug]) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$short '.$short.PHP_EOL.'$long '.$long);
   global $dbc;
   $departures = json_decode(file_get_contents('http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.$short), TRUE);
@@ -83,7 +90,7 @@ function getStations($input) {
   return $stations;
 }//getStations
 
-//there is a akward but in the telegram API, so you can't send " H"
+//there is a akward bug in the telegram API, so you can't send " H"
 function encBug($x) {
   if ($GLOBALS[debug]) sendMsg($GLOBALS[chatId], $x.' to '.str_replace("H", ".H", $x));
   return str_replace("H", ".H", $x);
