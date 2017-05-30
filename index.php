@@ -19,9 +19,6 @@ if (isset($chatId)) {
   if ($debug) sendMsg($chatId, '$chatId is set');
   if (!$debug) update($chatId);
   switch (explode(' ', $inputMsg)[0]) {
-    case '/s':
-      printResult ($chatId, explode(' ', $inputMsg)[1], '');
-      break;
     case '/station':
       sendMsg($chatId, '/station wird nicht länger gebraucht, tippe einfach den Haltestellennamen ohne Zusatz ein.');
       break;
