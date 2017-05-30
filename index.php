@@ -83,7 +83,7 @@ function printResult ($chatId, $short, $long) {
   if ($GLOBALS[debug]) sendMsg($chatId, '$msg '.$msg);
   if ($GLOBALS[debug]) sendMsg($chatId, 'count($departures) '.count($departures));
   for ($i=0; $i<count($departures); $i++)
-    $msg .= "` ".addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 28).$departures[$i][2]."` ".urlencode("\n");
+    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 22).$departures[$i][2].'`'.urlencode("\n");
   if($i == 0) $msg = 'No information available';
   if ($GLOBALS[debug]) sendMsg($chatId, '$msg '.$msg);
   apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.$msg);
@@ -117,26 +117,28 @@ function isStationShort ($input) {
   return mysqli_fetch_array(@mysqli_query($dbc, 'SELECT count(*) FROM `dvb_stations` WHERE `short` = "'.$input.'"'))[0];
 }
 
-//there is a akward bug in the telegram API, so you can't send " H"
+//there is a akward bug in the telegram API, so you can't send  'H'
 function encBug($x) {
-  if ($GLOBALS[debug]) sendMsg($GLOBALS[chatId], $x.' to '.str_replace("H", ".H", $x));
-  return str_replace("H", ".H", $x);
+  if ($GLOBALS[debug]) sendMsg($GLOBALS[chatId], $x.' to '.str_replace('H', '.H', $x));
+  return str_replace('H', '.H', $x);
 }//encBug
 
 function decBug($x) {
-  return str_replace(".H", "H", $x);
+  return str_replace('.H', 'H', $x);
 }//decBug
 
 function addSpace ($input, $length) {
-  $count = substr_count($input, "Ä");
-  $count += substr_count($input, "Ö");
-  $count += substr_count($input, "Ü");
-  $count += substr_count($input, "ä");
-  $count += substr_count($input, "ö");
-  $count += substr_count($input, "ü");
-  $count += substr_count($input, "ß");
-  $output = str_pad(encBug($input), $length, urlencode(" "));
-  for ($i=0; $i<$count; $i++) $output .= " ";
+  if ($GLOBALS[debug]) sendMsg($GLOBALS[chatId], 'length of '.$input.' '.strlen($input));
+  $input = substr($input, 0, $length);
+  $count = substr_count($input, 'Ä');
+  $count += substr_count($input, 'Ö');
+  $count += substr_count($input, 'Ü');
+  $count += substr_count($input, 'ä');
+  $count += substr_count($input, 'ö');
+  $count += substr_count($input, 'ü');
+  $count += substr_count($input, 'ß');
+  $output = str_pad(encBug($input), $length, urlencode(' '));
+  for ($i=0; $i<$count; $i++) $output .= ' ';
   return $output;
 }
 ?>
