@@ -8,6 +8,7 @@
   $chatId = $input['message']['chat']['id'];
   $inputMsg = $input['message']['text'];
   $senderFirstName = $input['message']['from']['first_name'];
+  $senderLastName = $input['message']['from']['last_name'];
   $senderUsername = $input['message']['from']['username'];
   $callbackId = $input['callback_query']['from']['id'];
   $callbackData = $input['callback_query']['data'];
@@ -16,6 +17,9 @@ if (isset($chatId)) {
   if ($debug) sendMsg($chatId, '$chatId is set');
   if (!$debug) update($chatId);
   switch (explode(' ', $inputMsg)[0]) {
+    case '/s':
+      printResult ($chatId, explode(' ', $inputMsg)[1], '');
+      break;
     case '/station':
       sendMsg($chatId, '/station wird nicht länger gebraucht, tippe einfach den Haltestellennamen ohne Zusatz ein.');
       break;
@@ -26,7 +30,7 @@ if (isset($chatId)) {
       if (count(explode(' ', $inputMsg)) == 1)
         sendMsg($chatId, 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.'Zum Beispiel'.PHP_EOL.'/contact Cooler Bot Manni ;)');
       else {
-        sendMsg($contactChatId, 'from @'.$senderUsername.PHP_EOL.$inputMsg);
+        sendMsg($contactChatId, 'from @'.$senderUsername.' ('.$senderFirstName.' '.$senderLastName.')'.PHP_EOL.$inputMsg);
         sendMsg($chatId, 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni');
       }//else
       break;
@@ -60,10 +64,10 @@ if($input['callback_query']) {
 function printResult ($chatId, $short, $long) {
   if ($GLOBALS[debug]) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$short '.$short.PHP_EOL.'$long '.$long);
   global $dbc;
-  $departures = json_decode(file_get_contents('http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.$short), TRUE);
+  $departures = json_decode(file_get_contents('http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.decBug($short)), TRUE);
   if ($long == '')
-    $long = mysqli_fetch_array(@mysqli_query($dbc, 'SELECT * FROM `dvb_stations` WHERE `short`="'.$short.'"'))['station'];
-  $msg = 'Die Abfahrten für '.encBug($long).urlencode("\n");
+    $long = mysqli_fetch_array(@mysqli_query($dbc, 'SELECT * FROM `dvb_stations` WHERE `short`="'.decBug($short).'"'))['station'];
+  $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
   if ($GLOBALS[debug]) sendMsg($chatId, '$msg '.$msg);
   if ($GLOBALS[debug]) sendMsg($chatId, 'count($departures) '.count($departures));
   for ($i=0; $i<count($departures); $i++)
