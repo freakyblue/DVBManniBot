@@ -83,7 +83,7 @@ function printResult ($chatId, $short, $long) {
   if ($GLOBALS[debug]) sendMsg($chatId, '$msg '.$msg);
   if ($GLOBALS[debug]) sendMsg($chatId, 'count($departures) '.count($departures));
   for ($i=0; $i<count($departures); $i++)
-    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 22).$departures[$i][2].'`'.urlencode("\n");
+    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
   if($i == 0) $msg = 'No information available';
   if ($GLOBALS[debug]) sendMsg($chatId, '$msg '.$msg);
   apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.$msg);
