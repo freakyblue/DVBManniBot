@@ -1,1 +1,10 @@
+# PHP files
 token.php
+update.php
+all_stattions.php
+
+# All images
+*.jpg
+*.jpeg
+*.JPG
+*.png
