@@ -10,6 +10,8 @@
   $senderFirstName = $input['message']['from']['first_name'];
   $senderLastName = $input['message']['from']['last_name'];
   $senderUsername = $input['message']['from']['username'];
+  $senderId = $input['message']['from']['id'];
+  $senderPhone = $input['message']['from']['phone'];
   $callbackId = $input['callback_query']['from']['id'];
   $callbackData = $input['callback_query']['data'];
 
@@ -26,28 +28,41 @@ if (isset($chatId)) {
     case '/start':
       sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.');
       break;
+    case '/answer':
+      if ($chatId == $contactChatId) {
+        $contacterChatId = explode(' ', $inputMsg)[1];
+        $msg = str_replace('/answer ', '', $inputMsg);
+        $msg = str_replace($contacterChatId, '', $msg);
+        sendMsg($contacterChatId, $msg);
+      }//if
+      else sendMsg($chatId, 'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /');
+      break;
     case '/contact':
       if (count(explode(' ', $inputMsg)) == 1)
         sendMsg($chatId, 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.'Zum Beispiel'.PHP_EOL.'/contact Cooler Bot Manni ;)');
       else {
-        sendMsg($contactChatId, 'from @'.$senderUsername.' ('.$senderFirstName.' '.$senderLastName.')'.PHP_EOL.$inputMsg);
+        sendMsg($contactChatId, 'from @'.$senderUsername.' ('.$senderFirstName.' '.$senderLastName.') '.$chatId.PHP_EOL.$inputMsg);
         sendMsg($chatId, 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni');
       }//else
       break;
     default:
-      $possibleStations = getStations($inputMsg);
-      if ($debug) sendMsg($chatId, 'count($possibleStations) '.count($possibleStations));
-      if (count($possibleStations) > 1) {
-        for ($i=0; $i<count($possibleStations); $i++) {
-          if ($debug) sendMsg($chatId, 'text '.$possibleStations[$i][1].PHP_EOL.'callback_data /short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1]));
-          //$but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short HBF Hauptbahnhof'));
-          $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
-        }
-        inlineKeys($but, $chatId, 'Meinten Sie?');
-      }//if
+      if (isStationShort($inputMsg)) //if station-short is entered
+        printResult($chatId, $inputMsg, '');
       else {
-        if ($debug) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$possibleStations[0][0] '.$possibleStations[0][0].PHP_EOL.'$possibleStations[0][1] '.$possibleStations[0][1]);
-        printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
+        $possibleStations = getStations($inputMsg);
+        if ($debug) sendMsg($chatId, 'count($possibleStations) '.count($possibleStations));
+        if (count($possibleStations) > 1) {
+          for ($i=0; $i<count($possibleStations); $i++) {
+            if ($debug) sendMsg($chatId, 'text '.$possibleStations[$i][1].PHP_EOL.'callback_data /short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1]));
+            //$but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short HBF Hauptbahnhof'));
+            $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
+          }
+          inlineKeys($but, $chatId, 'Meinten Sie?');
+        }//if
+        else {
+          if ($debug) sendMsg($chatId, '$chatId '.$chatId.PHP_EOL.'$possibleStations[0][0] '.$possibleStations[0][0].PHP_EOL.'$possibleStations[0][1] '.$possibleStations[0][1]);
+          printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
+        }//else
       }//else
       break;
   }//switch
@@ -90,7 +105,7 @@ function inlineKeys ($buttons, $chatId, $msg) {
   apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).'&reply_markup='.$keyboard);
 }//inlineKeys
 
-function getStations($input) {
+function getStations ($input) {
   global $dbc;
   $stations = [];
   $dbResult = @mysqli_query($dbc, 'SELECT * FROM `dvb_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8');
@@ -99,6 +114,11 @@ function getStations($input) {
   }//while
   return $stations;
 }//getStations
+
+function isStationShort ($input) {
+  global $dbc;
+  return mysqli_fetch_array(@mysqli_query($dbc, 'SELECT count(*) FROM `dvb_stations` WHERE `short` = "'.$input.'"'))[0];
+}
 
 //there is a akward bug in the telegram API, so you can't send " H"
 function encBug($x) {
