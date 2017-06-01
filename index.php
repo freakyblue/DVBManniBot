@@ -25,10 +25,10 @@ if ($chatId) {  //to hide warnings from website
       sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
         'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.', '');
       break;
-    case '/addMyStation':
+    case '/addmystation':
       $arg1 = explode(' ', $inputMsg)[1];
       if (!isset($arg1)) {
-        sendMsg($chatId, 'Bitte gib eine Haltestelle an.', '');
+        sendMsg($chatId, 'Bitte geben Sie eine Haltestelle  an.'.PHP_EOL.'z.B. /addmystation HBF', '');
         break;
       }
       if (isStationShort($arg1)) addMyStation($chatId, $arg1);
@@ -44,7 +44,7 @@ if ($chatId) {  //to hide warnings from website
         else sendMsg($chatId, 'Ich konnte keine passende Haltestelle finden.', '');
       }//else
       break;
-    case '/removeMyStation':
+    case '/removemystation':
       removeMyStation($chatId, explode(' ', $inputMsg)[1]);
       break;
     case '/keys':
@@ -57,6 +57,15 @@ if ($chatId) {  //to hide warnings from website
         $msg = str_replace('/answer ', '', $inputMsg);
         $msg = str_replace($contacterChatId, '', $msg);
         sendMsg($contacterChatId, $msg, '');
+      }//if
+      else sendMsg($chatId, $chatId.'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.
+        'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /contact','');
+      break;
+    //to answer as bot (for admmin only)
+    case '/sendAll':
+      if ($chatId == $contactId) {
+        $msg = str_replace('/sendAll ', '', $inputMsg);
+        sendAll($chatId, $msg);
       }//if
       else sendMsg($chatId, $chatId.'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.
         'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /contact','');

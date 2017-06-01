@@ -18,12 +18,14 @@ function printResult ($chatId, $short, $long) {
   for ($i=0; $i<count($departures); $i++)
     $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
   if($i == 0) $msg = 'Keine Abfahrtsinformationen verfügbar.'.urlencode("\n").
-    'Aber eine alte Manni-Weisheit besagt, dass es noch 42 Minauten dauert.';
+    'Aber eine alte Manni-Weisheit besagt, dass es noch 42 Minuten dauert.';
   if($i == 10) {
-    $but[] = array(array('text' => 'mehr anzeigen', 'callback_data' => '/printLongResult '.$short.' '.$long));
+    $but[] = array(array('text' => 'mehr anzeigen',
+      'callback_data' => '/printLongResult '.encBug($short).' '.encBug(decBug($long))));
     //inlineKeys($but, $chatId, $msg);
     $keyboard = json_encode(array('inline_keyboard' => $but));
-    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.$msg.'&reply_markup='.$keyboard);
+    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.encBug(decBug($msg)).
+      '&reply_markup='.$keyboard);
   }//if
   else
     sendMsg ($chatId, $msg, 'Markdown');
@@ -69,8 +71,14 @@ function removeMyStation ($chatId, $short) {
   else sendMsg ($chatId, $short.' befindet sich nicht in Ihrer Auswahl.', '');
 }//removeMyStation
 
-function sendAll ($msg) {
-  //@TODO
+function sendAll ($chatId, $msg) {
+  global $dbc;
+  $contactId = $GLOBALS[contactId];
+  if ($chatId == $contactId) {
+    $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `dvb_bot_user` WHERE 1');
+    while ($currChatId = mysqli_fetch_array($dbResult))
+      sendMsg($currChatId['chat_id'], $msg, '');
+  }//if
 }//sendAll
 
 function sendMsg ($chatId, $msg, $mode) {
