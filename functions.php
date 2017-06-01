@@ -1,5 +1,5 @@
 <?php
-$debug = TRUE;
+$debug = FALSE;
 
 require_once('token.php');
 if (!$debug) require_once('update.php');
@@ -17,10 +17,61 @@ function printResult ($chatId, $short, $long) {
   $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
   for ($i=0; $i<count($departures); $i++)
     $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
-  if($i == 0) $msg = 'No information available'.PHP_EOL.
+  if($i == 0) $msg = 'Keine Abfahrtsinformationen verfügbar.'.urlencode("\n").
     'Aber eine alte Manni-Weisheit besagt, dass es noch 42 Minauten dauert.';
+  if($i == 10) {
+    $but[] = array(array('text' => 'mehr anzeigen', 'callback_data' => '/printLongResult '.$short.' '.$long));
+    //inlineKeys($but, $chatId, $msg);
+    $keyboard = json_encode(array('inline_keyboard' => $but));
+    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.$msg.'&reply_markup='.$keyboard);
+  }//if
+  else
+    sendMsg ($chatId, $msg, 'Markdown');
+}//printResult
+
+function printLongResult ($chatId, $short, $long) {
+  $departures = json_decode(file_get_contents(
+    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=20&hst='.decBug($short)), TRUE);
+  $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
+  for ($i=0; $i<count($departures); $i++)
+    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
   sendMsg ($chatId, $msg, 'Markdown');
-}
+}//printLongResult
+
+function addMyStation ($chatId, $short) {
+  global $dbc;
+  $maxStationNo = 9;
+  $allStations = explode(' ', mysqli_fetch_array(@mysqli_query(
+    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0]);
+  if (in_array($short, $allStations))
+    sendMsg ($chatId, 'Diese Haltestelle befindet sich bereits in Ihrer Auswahl.', '');
+  elseif (count($allStations) >= $maxStationNo)
+    sendMsg ($chatId, 'Es befinden sich zu viele Haltestellen in Ihrer Auswahl.', '');
+  else {
+    if (count($allStations) == 0) $spacer = '';
+    else $spacer = ' ';
+    @mysqli_query($dbc, 'UPDATE `dvb_bot_user` SET `myStations` = concat(`myStations` ,"'.$spacer.decBug($short)
+      .'") WHERE `chat_id` ='.$chatId);
+    userKeys ($chatId, 'Erfolgreich hinzugefügt.');
+  }//addMyStation
+}//addMyStation
+
+function removeMyStation ($chatId, $short) {
+  global $dbc;
+  $allStations = mysqli_fetch_array(@mysqli_query(
+    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0];
+  if (in_array($short, explode(' ', $allStations))) {
+    $allStations = trim(str_replace($short, '', $allStations));
+    $allStations = preg_replace('/\s\s+/', ' ', $allStations);
+    @mysqli_query($dbc, 'UPDATE `dvb_bot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id` ='.$chatId);
+    userKeys ($chatId, 'Erfolgreich entfernt.');
+  }//if
+  else sendMsg ($chatId, $short.' befindet sich nicht in Ihrer Auswahl.', '');
+}//removeMyStation
+
+function sendAll ($msg) {
+  //@TODO
+}//sendAll
 
 function sendMsg ($chatId, $msg, $mode) {
   if ($mode == '') $msg = urlencode($msg);
@@ -35,6 +86,25 @@ function inlineKeys ($buttons, $chatId, $msg) {
   $keyboard = json_encode(array('inline_keyboard' => $buttons));
   apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).'&reply_markup='.$keyboard);
 }//inlineKeys
+
+function keyboard ($keys, $text, $chatId) {
+  apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($text).
+    '&reply_markup='.json_encode($keys));
+}
+
+function userKeys ($chatId, $msg) {
+  global $dbc;
+  $db = explode(' ', mysqli_fetch_array(@mysqli_query(
+    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0]);
+  $keyboard = [];
+  $buttonsPerRow = 3;
+  for ($i=0; $i<count($db); $i++) {
+    if ($i % $buttonsPerRow == 0) array_push($keyboard, [$db[$i]]);
+    else array_push($keyboard[floor($i/$buttonsPerRow)], $db[$i]);
+  }
+  $keys = array('resize_keyboard' => true, 'keyboard'=> $keyboard);
+  keyboard($keys, $msg, $chatId);
+}
 
 function getStations ($input) {
   global $dbc;

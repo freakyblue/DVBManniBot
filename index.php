@@ -1,5 +1,5 @@
 <?php
-$debug = TRUE;
+$debug = FALSE;
 
 require_once('token.php');    //bot identifier
 require_once('../../mysqli_connect.php');   //db-connection
@@ -24,6 +24,31 @@ if ($chatId) {  //to hide warnings from website
     case '/start':
       sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
         'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.', '');
+      break;
+    case '/addMyStation':
+      $arg1 = explode(' ', $inputMsg)[1];
+      if (!isset($arg1)) {
+        sendMsg($chatId, 'Bitte gib eine Haltestelle an.', '');
+        break;
+      }
+      if (isStationShort($arg1)) addMyStation($chatId, $arg1);
+      else {
+        $possibleStations = getStations($arg1);
+        if (count($possibleStations) > 1) {
+          for ($i=0; $i<count($possibleStations); $i++)
+            $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/addshort '.
+              encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
+          inlineKeys($but, $chatId, 'Meinten Sie?');
+        }//if
+        elseif (count($possibleStations) == 1) addMyStation($chatId, $possibleStations[0][0]);
+        else sendMsg($chatId, 'Ich konnte keine passende Haltestelle finden.', '');
+      }//else
+      break;
+    case '/removeMyStation':
+      removeMyStation($chatId, explode(' ', $inputMsg)[1]);
+      break;
+    case '/keys':
+      userKeys($chatId, 'Auswahl aktualisiert.');
       break;
     //to answer as bot (for admmin only)
     case '/answer':
@@ -64,12 +89,25 @@ if ($chatId) {  //to hide warnings from website
       break;
   }//switch
 
-  if($input['callback_query']) {
-    $command = explode(' ', $callbackData)[0];
-    $arg1 = explode(' ', $callbackData)[1];
-    $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4];
-    if($command == '/short') printResult($callbackId, $arg1, $arg2);
-  }//if
-
 }//if
+
+if($input['callback_query']) {
+  $command = explode(' ', $callbackData)[0];
+  $arg1 = explode(' ', $callbackData)[1];
+  $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4];
+  switch($command) {
+    case '/short':
+      printResult($callbackId, $arg1, $arg2);
+      break;
+    case '/addshort':
+      addMyStation($callbackId, $arg1);
+      break;
+    case '/printLongResult':
+      printLongResult($callbackId, $arg1, $arg2);
+      break;
+    default:
+      break;
+    }//switch
+}//if
+
 ?>
