@@ -1,7 +1,9 @@
 # DVBManniBot
 
-A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public transport in Dresden (Germany).
+A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public transport in Dresden (Germany). It uses the
+DVB-Web-API.
 
+![Screenshot](/imgs/screenshot.jpg)
 
 ## Links
 - [Telegram](https://telegram.org/) (The App)
@@ -10,4 +12,4 @@ A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public tran
 
 ## Contributing
 
-Feel free to fork, report issues or open pull requests.
+Feel free to fork, report bugs or open pull requests.
