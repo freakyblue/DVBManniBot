@@ -25,6 +25,17 @@ if ($chatId) {  //to hide warnings from website
       sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
         'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.', '');
       break;
+    case '/help':
+      sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
+        'Wobei brauchen Sie Hilfe?'.PHP_EOL.PHP_EOL.
+        '- Tippen Sie einfach den Stationsname oder einen Teil ein um die Abfahrten angezeigt zu bekommen.'.PHP_EOL.
+        '- Mit /addmystation können Sie eine Haltestelle zu Ihrer persönlichen Schnellauswahl hinzufügen.'.PHP_EOL.
+        '- Mit /removemystation können Sie eine Haltestelle von Ihrer Schnellauswahl entfernen.'.PHP_EOL.
+        '- Mit /keys werden die Schnellauswahltasten aktualisiert eingeblendet.'.PHP_EOL.
+        '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob loswerden.'.PHP_EOL.
+        PHP_EOL.'P.S.: Ich freue mich sehr, wennn Sie diesen Bot Freuden weiterempfehlen.'.PHP_EOL.
+        'Dein Manni', '');
+      break;
     case '/addmystation':
       $arg1 = explode(' ', $inputMsg)[1];
       if (!isset($arg1)) {
