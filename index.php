@@ -18,7 +18,7 @@ $callbackId = $input['callback_query']['from']['id'];
 $callbackData = $input['callback_query']['data'];
 
 if ($chatId) {  //to hide warnings from website
-  if (!$debug) update($chatId, $senderUsername);
+  if (!$debug) update($chatId, $senderUsername, $senderFirstName, $senderLastName);
 
   switch ($command) {
     case '/start':

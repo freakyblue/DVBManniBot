@@ -13,7 +13,7 @@ function printResult ($chatId, $short, $long) {
     'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.decBug($short)), TRUE);
   if ($long == '')
     $long = mysqli_fetch_array(@mysqli_query($dbc,
-      'SELECT * FROM `dvb_stations` WHERE `short`="'.decBug($short).'"'))['station'];
+      'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.decBug($short).'"'))['station'];
   $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
   for ($i=0; $i<count($departures); $i++)
     $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
@@ -44,7 +44,7 @@ function addMyStation ($chatId, $short) {
   global $dbc;
   $maxStationNo = 9;
   $allStations = explode(' ', mysqli_fetch_array(@mysqli_query(
-    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0]);
+    $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0]);
   if (in_array($short, $allStations))
     sendMsg ($chatId, 'Diese Haltestelle befindet sich bereits in Ihrer Auswahl.', '');
   elseif (count($allStations) >= $maxStationNo)
@@ -52,7 +52,7 @@ function addMyStation ($chatId, $short) {
   else {
     if (count($allStations) == 0) $spacer = '';
     else $spacer = ' ';
-    @mysqli_query($dbc, 'UPDATE `dvb_bot_user` SET `myStations` = concat(`myStations` ,"'.$spacer.decBug($short)
+    @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = concat(`myStations` ,"'.$spacer.decBug($short)
       .'") WHERE `chat_id` ='.$chatId);
     userKeys ($chatId, 'Erfolgreich hinzugefügt.');
   }//addMyStation
@@ -61,11 +61,11 @@ function addMyStation ($chatId, $short) {
 function removeMyStation ($chatId, $short) {
   global $dbc;
   $allStations = mysqli_fetch_array(@mysqli_query(
-    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0];
+    $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0];
   if (in_array($short, explode(' ', $allStations))) {
     $allStations = trim(str_replace($short, '', $allStations));
     $allStations = preg_replace('/\s\s+/', ' ', $allStations);
-    @mysqli_query($dbc, 'UPDATE `dvb_bot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id` ='.$chatId);
+    @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id` ='.$chatId);
     userKeys ($chatId, 'Erfolgreich entfernt.');
   }//if
   else sendMsg ($chatId, $short.' befindet sich nicht in Ihrer Auswahl.', '');
@@ -75,7 +75,7 @@ function sendAll ($chatId, $msg) {
   global $dbc;
   $contactId = $GLOBALS[contactId];
   if ($chatId == $contactId) {
-    $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `dvb_bot_user` WHERE 1');
+    $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `bot_DVBManniBot_user` WHERE 1');
     while ($currChatId = mysqli_fetch_array($dbResult))
       sendMsg($currChatId['chat_id'], $msg, '');
   }//if
@@ -103,7 +103,7 @@ function keyboard ($keys, $text, $chatId) {
 function userKeys ($chatId, $msg) {
   global $dbc;
   $db = explode(' ', mysqli_fetch_array(@mysqli_query(
-    $dbc, 'SELECT `myStations` FROM `dvb_bot_user` WHERE `chat_id` ='.$chatId))[0]);
+    $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0]);
   $keyboard = [];
   $buttonsPerRow = 3;
   for ($i=0; $i<count($db); $i++) {
@@ -117,7 +117,7 @@ function userKeys ($chatId, $msg) {
 function getStations ($input) {
   global $dbc;
   $stations = [];
-  $dbResult = @mysqli_query($dbc, 'SELECT * FROM `dvb_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8');
+  $dbResult = @mysqli_query($dbc, 'SELECT * FROM `bot_DVBManniBot_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8');
   while ($result = mysqli_fetch_array($dbResult))
     array_push($stations, array($result['short'], $result['station']));
   return $stations;
@@ -125,7 +125,7 @@ function getStations ($input) {
 
 function isStationShort ($input) {
   global $dbc;
-  return mysqli_fetch_array(@mysqli_query($dbc, 'SELECT count(*) FROM `dvb_stations` WHERE `short` = "'.$input.'"'))[0];
+  return mysqli_fetch_array(@mysqli_query($dbc, 'SELECT count(*) FROM `bot_DVBManniBot_stations` WHERE `short` = "'.$input.'"'))[0];
 }
 
 //there is a akward bug in the telegram API, so you can't send  'H'
