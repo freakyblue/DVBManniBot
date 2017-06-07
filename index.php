@@ -1,12 +1,11 @@
 <?php
-$debug = FALSE;
+$debug = TRUE;
 
 require_once('token.php');    //bot identifier
-require_once('../../mysqli_connect.php');   //db-connection
 require_once('functions.php');
+require_once('response-messages.php');
 if (!$debug) require_once('update.php');    //statistics
 
-$website = 'https://api.telegram.org/bot'.$token;
 $input = json_decode(file_get_contents('php://input'), TRUE);
 $chatId = $input['message']['chat']['id'];
 $inputMsg = $input['message']['text'];
@@ -22,24 +21,15 @@ if ($chatId) {  //to hide warnings from website
 
   switch ($command) {
     case '/start':
-      sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
-        'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.', '');
+      sendMsg($chatId, $resp['start'], '');
       break;
     case '/help':
-      sendMsg($chatId, 'Hallo '.$senderFirstName.PHP_EOL.
-        'Wobei brauchen Sie Hilfe?'.PHP_EOL.PHP_EOL.
-        '- Tippen Sie einfach den Stationsname oder einen Teil ein um die Abfahrten angezeigt zu bekommen.'.PHP_EOL.
-        '- Mit /addmystation können Sie eine Haltestelle zu Ihrer persönlichen Schnellauswahl hinzufügen.'.PHP_EOL.
-        '- Mit /removemystation können Sie eine Haltestelle von Ihrer Schnellauswahl entfernen.'.PHP_EOL.
-        '- Mit /keys werden die Schnellauswahltasten aktualisiert eingeblendet.'.PHP_EOL.
-        '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob loswerden.'.PHP_EOL.
-        PHP_EOL.'P.S.: Ich freue mich sehr, wennn Sie diesen Bot Freuden weiterempfehlen.'.PHP_EOL.
-        'Dein Manni', '');
+      sendMsg($chatId, $resp['help'], '');
       break;
     case '/addmystation':
       $arg1 = explode(' ', $inputMsg)[1];
       if (!isset($arg1)) {
-        sendMsg($chatId, 'Bitte geben Sie eine Haltestelle  an.'.PHP_EOL.'z.B. /addmystation HBF', '');
+        sendMsg($chatId, $resp['add_no_input'], '');
         break;
       }
       if (isStationShort($arg1)) addMyStation($chatId, $arg1);
@@ -49,17 +39,17 @@ if ($chatId) {  //to hide warnings from website
           for ($i=0; $i<count($possibleStations); $i++)
             $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/addshort '.
               encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
-          inlineKeys($but, $chatId, 'Meinten Sie?');
+          inlineKeys($but, $chatId, $resp['suggest']);
         }//if
         elseif (count($possibleStations) == 1) addMyStation($chatId, $possibleStations[0][0]);
-        else sendMsg($chatId, 'Ich konnte keine passende Haltestelle finden.', '');
+        else sendMsg($chatId, $resp['no_station_match'], '');
       }//else
       break;
     case '/removemystation':
       removeMyStation($chatId, explode(' ', $inputMsg)[1]);
       break;
     case '/keys':
-      userKeys($chatId, 'Auswahl aktualisiert.');
+      userKeys($chatId, $resp['keys_refreshed']);
       break;
     //to answer as bot (for admmin only)
     case '/answer':
@@ -69,8 +59,7 @@ if ($chatId) {  //to hide warnings from website
         $msg = str_replace($contacterChatId, '', $msg);
         sendMsg($contacterChatId, $msg, '');
       }//if
-      else sendMsg($chatId, $chatId.'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.
-        'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /contact','');
+      else sendMsg($chatId, $resp['not_manni'],'');
       break;
     //to answer as bot (for admmin only)
     case '/sendAll':
@@ -78,19 +67,16 @@ if ($chatId) {  //to hide warnings from website
         $msg = str_replace('/sendAll ', '', $inputMsg);
         sendAll($chatId, $msg);
       }//if
-      else sendMsg($chatId, $chatId.'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.
-        'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /contact','');
+      else sendMsg($chatId, $resp['not_manni'],'');
       break;
     //to contact the bot admin
     case '/contact':
       if (count(explode(' ', $inputMsg)) == 1)
-        sendMsg($chatId, 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.'Zum Beispiel'.PHP_EOL.
-          '/contact Cooler Bot Manni ;)','');
+        sendMsg($chatId, $resp['contact_no_input'],'');
       else {
         sendMsg($contactId, 'from @'.$senderUsername.' ('.$senderFirstName.' '.$senderLastName.') '.$chatId.PHP_EOL.
           $inputMsg,'');
-        sendMsg($chatId, 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.
-          'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni','');
+        sendMsg($chatId, $resp['contact_thx'],'');
       }//else
       break;
     default:
@@ -102,7 +88,7 @@ if ($chatId) {  //to hide warnings from website
           for ($i=0; $i<count($possibleStations); $i++)
             $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.
               encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
-          inlineKeys($but, $chatId, 'Meinten Sie?');
+          inlineKeys($but, $chatId, $resp['suggest']);
         }//if
         else printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
       }//else

@@ -1,27 +1,26 @@
 <?php
-$debug = FALSE;
-
 require_once('token.php');
+require_once('response-messages.php');
 require_once('../../mysqli_connect.php');
 
 $website = 'https://api.telegram.org/bot'.$token;
 
 function addMyStation ($chatId, $short) {
-  global $dbc;
+  global $dbc, $resp;
   $short = strtoupper($short);
   $maxStationNo = 9;
   $allStations = explode(' ', mysqli_fetch_array(@mysqli_query(
     $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0]);
   if (in_array($short, $allStations))
-    sendMsg ($chatId, 'Diese Haltestelle befindet sich bereits in Ihrer Auswahl.', '');
+    sendMsg ($chatId, $resp['add_already_in'], '');
   elseif (count($allStations) >= $maxStationNo)
-    sendMsg ($chatId, 'Es befinden sich zu viele Haltestellen in Ihrer Auswahl.', '');
+    sendMsg ($chatId, $resp['add_too_much'], '');
   else {
     if (count($allStations) == 0) $spacer = '';
     else $spacer = ' ';
     @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = concat(`myStations` ,"'.
       $spacer.decBug($short).'") WHERE `chat_id` ='.$chatId);
-    userKeys ($chatId, 'Erfolgreich hinzugefügt.');
+    userKeys ($chatId, $resp['add_succes']);
   }//else
 }//addMyStation
 
@@ -78,28 +77,28 @@ function keyboard ($keys, $text, $chatId) {
 }//keyboard
 
 function printLongResult ($chatId, $short, $long) {
+  global $resp;
   $departures = json_decode(file_get_contents(
     'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=20&hst='.decBug($short)), TRUE);
-  $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
   for ($i=0; $i<count($departures); $i++)
     $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
-  sendMsg ($chatId, $msg, 'Markdown');
+  sendMsg ($chatId, $resp['print_dep_for'].encBug(decBug($long)).urlencode("\n").$msg, 'Markdown');
 }//printLongResult
 
 function printResult ($chatId, $short, $long) {
-  global $dbc;
+  global $dbc, $resp;
   $departures = json_decode(file_get_contents(
     'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.decBug($short)), TRUE);
   if ($long == '')
     $long = mysqli_fetch_array(@mysqli_query($dbc,
       'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.decBug($short).'"'))['station'];
-  $msg = 'Die Abfahrten für '.encBug(decBug($long)).urlencode("\n"); //removes second point
+  $msg = $resp['print_dep_for'].encBug(decBug($long)).urlencode("\n"); //removes second point
   for ($i=0; $i<count($departures); $i++)
     $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
-  if($i == 0) $msg = 'Keine Abfahrtsinformationen verfügbar.'.urlencode("\n").
-    'Aber eine alte Manni-Weisheit besagt, dass es noch 42 Minuten dauert.';
+  if($i == 0)
+    $msg = $resp['print_no_info'];
   if($i == 10) {
-    $but[] = array(array('text' => 'mehr anzeigen',
+    $but[] = array(array('text' => $resp['show_more'],
       'callback_data' => '/printLongResult '.encBug($short).' '.encBug(decBug($long))));
     //inlineKeys($but, $chatId, $msg);
     $keyboard = json_encode(array('inline_keyboard' => $but));
@@ -111,7 +110,7 @@ function printResult ($chatId, $short, $long) {
 }//printResult
 
 function removeMyStation ($chatId, $short) {
-  global $dbc;
+  global $dbc, $resp;
   $short = strtoupper($short);
   $allStations = mysqli_fetch_array(@mysqli_query(
     $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0];
@@ -119,9 +118,9 @@ function removeMyStation ($chatId, $short) {
     $allStations = trim(str_replace($short, '', $allStations));
     $allStations = preg_replace('/\s\s+/', ' ', $allStations);
     @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id` ='.$chatId);
-    userKeys ($chatId, 'Erfolgreich entfernt.');
+    userKeys ($chatId, $resp['rm_succes']);
   }//if
-  else sendMsg ($chatId, $short.' befindet sich nicht in Ihrer Auswahl.', '');
+  else sendMsg ($chatId, $resp['rm_not_in'], '');
 }//removeMyStation
 
 function sendAll ($chatId, $msg) {
