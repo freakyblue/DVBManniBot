@@ -2,13 +2,13 @@
 $debug = FALSE;
 
 require_once('token.php');
-if (!$debug) require_once('update.php');
 require_once('../../mysqli_connect.php');
 
 $website = 'https://api.telegram.org/bot'.$token;
 
 function addMyStation ($chatId, $short) {
   global $dbc;
+  $short = strtoupper($short);
   $maxStationNo = 9;
   $allStations = explode(' ', mysqli_fetch_array(@mysqli_query(
     $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0]);
@@ -19,8 +19,8 @@ function addMyStation ($chatId, $short) {
   else {
     if (count($allStations) == 0) $spacer = '';
     else $spacer = ' ';
-    @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = concat(`myStations` ,"'.$spacer.decBug($short)
-      .'") WHERE `chat_id` ='.$chatId);
+    @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = concat(`myStations` ,"'.
+      $spacer.decBug($short).'") WHERE `chat_id` ='.$chatId);
     userKeys ($chatId, 'Erfolgreich hinzugefügt.');
   }//else
 }//addMyStation
@@ -112,6 +112,7 @@ function printResult ($chatId, $short, $long) {
 
 function removeMyStation ($chatId, $short) {
   global $dbc;
+  $short = strtoupper($short);
   $allStations = mysqli_fetch_array(@mysqli_query(
     $dbc, 'SELECT `myStations` FROM `bot_DVBManniBot_user` WHERE `chat_id` ='.$chatId))[0];
   if (in_array($short, explode(' ', $allStations))) {
