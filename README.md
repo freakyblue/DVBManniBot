@@ -1,6 +1,6 @@
-# DVBManniBot
-
 [![githubissues](http://img.shields.io/github/issues/freakyblue/DVBManniBot.svg?style=flat)](https://github.com/freakyblue/DVBManniBot/issues)
+
+# DVBManniBot
 
 A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public transport in Dresden (Germany). It uses the
 DVB-Web-API.
