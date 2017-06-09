@@ -1,4 +1,5 @@
 [![githubissues](http://img.shields.io/github/issues/freakyblue/DVBManniBot.svg?style=flat)](https://github.com/freakyblue/DVBManniBot/issues)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 # DVBManniBot
 
