@@ -1,5 +1,5 @@
 <?php
-$debug = TRUE;
+$debug = FALSE;
 
 require_once('token.php');    //bot identifier
 require_once('functions.php');
@@ -37,8 +37,12 @@ if ($chatId) {  //to hide warnings from website
         $possibleStations = getStations($arg1);
         if (count($possibleStations) > 1) {
           for ($i=0; $i<count($possibleStations); $i++)
-            $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/addshort '.
-              encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
+            $but[] = array(array(
+              'text' => $possibleStations[$i][1],
+              'callback_data' => urlencode(
+                '/addshort '.$possibleStations[$i][0].' '.$possibleStations[$i][1]
+              )
+            ));
           inlineKeys($but, $chatId, $resp['suggest']);
         }//if
         elseif (count($possibleStations) == 1) addMyStation($chatId, $possibleStations[0][0]);
@@ -86,8 +90,12 @@ if ($chatId) {  //to hide warnings from website
         $possibleStations = getStations($inputMsg);
         if (count($possibleStations) > 1) {
           for ($i=0; $i<count($possibleStations); $i++)
-            $but[] = array(array('text' => $possibleStations[$i][1], 'callback_data' => '/short '.
-              encBug($possibleStations[$i][0]).' '.encBug($possibleStations[$i][1])));
+            $but[] = array(array(
+              'text' => $possibleStations[$i][1],
+              'callback_data' => urlencode(
+                '/addshort '.$possibleStations[$i][0].' '.$possibleStations[$i][1]
+              )
+            ));
           inlineKeys($but, $chatId, $resp['suggest']);
         }//if
         else printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);

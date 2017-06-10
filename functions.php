@@ -19,7 +19,7 @@ function addMyStation ($chatId, $short) {
     if (count($allStations) == 0) $spacer = '';
     else $spacer = ' ';
     @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = concat(`myStations` ,"'.
-      $spacer.decBug($short).'") WHERE `chat_id` ='.$chatId);
+      $spacer.$short.'") WHERE `chat_id` ='.$chatId);
     userKeys ($chatId, $resp['add_succes']);
   }//else
 }//addMyStation
@@ -33,7 +33,7 @@ function addSpace ($input, $length) {
   $count += substr_count($input, 'ö');
   $count += substr_count($input, 'ü');
   $count += substr_count($input, 'ß');
-  $output = str_pad(encBug($input), $length, urlencode(' '));
+  $output = str_pad($input, $length, ' ');
   for ($i=0; $i<$count; $i++) $output .= ' ';
   return $output;
 }//addSpace
@@ -41,15 +41,6 @@ function addSpace ($input, $length) {
 function apiRequest ($methode) {
   return file_get_contents($GLOBALS[website].'/'.$methode);
 }//apiRequest
-
-//there is a akward bug in the telegram API, so you can't send  'H'
-function decBug($x) {
-  return str_replace('.H', 'H', $x);
-}//decBug
-
-function encBug($x) {
-  return str_replace('H', '.H', $x);
-}//encBug
 
 function getStations ($input) {
   global $dbc;
@@ -79,30 +70,30 @@ function keyboard ($keys, $text, $chatId) {
 function printLongResult ($chatId, $short, $long) {
   global $resp;
   $departures = json_decode(file_get_contents(
-    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=20&hst='.decBug($short)), TRUE);
+    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=20&hst='.urlencode($short)), TRUE);
   for ($i=0; $i<count($departures); $i++)
-    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
-  sendMsg ($chatId, $resp['print_dep_for'].encBug(decBug($long)).urlencode("\n").$msg, 'Markdown');
+    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 20).$departures[$i][2].'`'."\n";
+  sendMsg ($chatId, $resp['print_dep_for'].$long."\n".$msg, 'Markdown');
 }//printLongResult
 
 function printResult ($chatId, $short, $long) {
   global $dbc, $resp;
   $departures = json_decode(file_get_contents(
-    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.decBug($short)), TRUE);
+    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.urlencode($short)), TRUE);
   if ($long == '')
     $long = mysqli_fetch_array(@mysqli_query($dbc,
-      'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.decBug($short).'"'))['station'];
-  $msg = $resp['print_dep_for'].encBug(decBug($long)).urlencode("\n"); //removes second point
+      'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.$short.'"'))['station'];
+  $msg = $resp['print_dep_for'].$long."\n"; //removes second point
   for ($i=0; $i<count($departures); $i++)
-    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 21).$departures[$i][2].'`'.urlencode("\n");
+    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 20).$departures[$i][2].'`'."\n";
   if($i == 0)
     $msg = $resp['print_no_info'];
   if($i == 10) {
     $but[] = array(array('text' => $resp['show_more'],
-      'callback_data' => '/printLongResult '.encBug($short).' '.encBug(decBug($long))));
+      'callback_data' => urlencode('/printLongResult '.$short.' '.$long)));
     //inlineKeys($but, $chatId, $msg);
     $keyboard = json_encode(array('inline_keyboard' => $but));
-    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.encBug(decBug($msg)).
+    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).
       '&reply_markup='.$keyboard);
   }//if
   else
@@ -124,8 +115,7 @@ function removeMyStation ($chatId, $short) {
 }//removeMyStation
 
 function sendAll ($chatId, $msg) {
-  global $dbc;
-  $contactId = $GLOBALS[contactId];
+  global $dbc, $contactId;
   if ($chatId == $contactId) {
     $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `bot_DVBManniBot_user` WHERE 1');
     while ($currChatId = mysqli_fetch_array($dbResult))
@@ -134,8 +124,7 @@ function sendAll ($chatId, $msg) {
 }//sendAll
 
 function sendMsg ($chatId, $msg, $mode) {
-  if ($mode == '') $msg = urlencode($msg);
-  apiRequest('sendmessage?parse_mode='.$mode.'&chat_id='.$chatId.'&text='.$msg);
+  apiRequest('sendmessage?parse_mode='.$mode.'&chat_id='.$chatId.'&text='.urlencode($msg));
 }//sendMsg
 
 function userKeys ($chatId, $msg) {

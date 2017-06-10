@@ -36,6 +36,6 @@ $resp['show_more'] = 'mehr anzeigen';
 
 //Markdown
 $resp['print_dep_for'] = 'Die Abfahrten für ';
-$resp['print_no_info'] = 'Keine Abfahrtsinformationen verfügbar.'.urlencode("\n").
+$resp['print_no_info'] = 'Keine Abfahrtsinformationen verfügbar.'."\n".
   'Aber eine alte Manni-Weisheit besagt, dass es noch 42 Minuten dauert.';
 ?>
