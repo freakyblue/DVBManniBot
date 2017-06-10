@@ -85,7 +85,7 @@ if ($chatId) {  //to hide warnings from website
       break;
     default:
       //if station-short is entered
-      if (isStationShort($inputMsg)) printResult($chatId, $inputMsg, '');
+      if (isStationShort($inputMsg)) printResult($chatId, $inputMsg, '', 10);
       else {
         $possibleStations = getStations($inputMsg);
         if (count($possibleStations) > 1) {
@@ -98,7 +98,7 @@ if ($chatId) {  //to hide warnings from website
             ));
           inlineKeys($but, $chatId, $resp['suggest']);
         }//if
-        else printResult($chatId, $possibleStations[0][0], $possibleStations[0][1]);
+        else printResult($chatId, $possibleStations[0][0], $possibleStations[0][1], 10);
       }//else
       break;
   }//switch
@@ -111,13 +111,13 @@ if($input['callback_query']) {
   $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4];
   switch($command) {
     case '/short':
-      printResult($callbackId, $arg1, $arg2);
+      printResult($callbackId, $arg1, $arg2, 10);
       break;
     case '/addshort':
       addMyStation($callbackId, $arg1);
       break;
     case '/printLongResult':
-      printLongResult($callbackId, $arg1, $arg2);
+      printResult($callbackId, $arg1, $arg2, 20);
       break;
     default:
       break;

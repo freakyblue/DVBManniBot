@@ -67,37 +67,30 @@ function keyboard ($keys, $text, $chatId) {
     '&reply_markup='.json_encode($keys));
 }//keyboard
 
-function printLongResult ($chatId, $short, $long) {
-  global $resp;
-  $departures = json_decode(file_get_contents(
-    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=20&hst='.urlencode($short)), TRUE);
-  for ($i=0; $i<count($departures); $i++)
-    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 20).$departures[$i][2].'`'."\n";
-  sendMsg ($chatId, $resp['print_dep_for'].$long."\n".$msg, 'Markdown');
-}//printLongResult
-
-function printResult ($chatId, $short, $long) {
+function printResult ($chatId, $short, $long, $max) {
   global $dbc, $resp;
   $departures = json_decode(file_get_contents(
-    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim=10&hst='.urlencode($short)), TRUE);
+    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim='.$max.'&hst='.urlencode($short)), TRUE);
   if ($long == '')
     $long = mysqli_fetch_array(@mysqli_query($dbc,
       'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.$short.'"'))['station'];
-  $msg = $resp['print_dep_for'].$long."\n"; //removes second point
-  for ($i=0; $i<count($departures); $i++)
-    $msg .= '`'.addSpace($departures[$i][0], 5).addSpace($departures[$i][1], 20).$departures[$i][2].'`'."\n";
-  if($i == 0)
+  foreach ($departures as $departure) {
+    $lenNo = max(strlen($departure[0]), $lenNo);
+    $lenDest = max(strlen($departure[1]), $lenDest);
+  }//foreach
+  $lenNo = min(4, $lenNo);
+  $lenDest = min(17, $lenDest);
+  foreach ($departures as $departure)
+    $msg .= '`'.addSpace($departure[0], ($lenNo + 1)).addSpace($departure[1], ($lenDest + 1)).$departure[2].'`'."\n";
+  if(count($departures) == 0)
     $msg = $resp['print_no_info'];
-  if($i == 10) {
+  if(count($departures) == 10) {
     $but[] = array(array('text' => $resp['show_more'],
       'callback_data' => urlencode('/printLongResult '.$short.' '.$long)));
-    //inlineKeys($but, $chatId, $msg);
-    $keyboard = json_encode(array('inline_keyboard' => $but));
-    apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).
-      '&reply_markup='.$keyboard);
+    inlineKeys($but, $chatId, $resp['print_dep_for'].$long."\n".$msg);
   }//if
   else
-    sendMsg ($chatId, $msg, 'Markdown');
+    sendMsg ($chatId, $resp['print_dep_for'].$long."\n".$msg, 'Markdown');
 }//printResult
 
 function removeMyStation ($chatId, $short) {
