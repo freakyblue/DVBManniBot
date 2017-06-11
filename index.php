@@ -40,7 +40,7 @@ if ($chatId) {  //to hide warnings from website
             $but[] = array(array(
               'text' => $possibleStations[$i][1],
               'callback_data' => urlencode(
-                '/addshort '.$possibleStations[$i][0].' '.$possibleStations[$i][1]
+                '/addshort_'.$possibleStations[$i][0].'_'.$possibleStations[$i][1]
               )
             ));
           inlineKeys($but, $chatId, $resp['suggest']);
@@ -93,7 +93,7 @@ if ($chatId) {  //to hide warnings from website
             $but[] = array(array(
               'text' => $possibleStations[$i][1],
               'callback_data' => urlencode(
-                '/addshort '.$possibleStations[$i][0].' '.$possibleStations[$i][1]
+                '/short_'.$possibleStations[$i][0].'_'.$possibleStations[$i][1]
               )
             ));
           inlineKeys($but, $chatId, $resp['suggest']);
@@ -106,9 +106,9 @@ if ($chatId) {  //to hide warnings from website
 }//if
 
 if($input['callback_query']) {
-  $command = explode(' ', $callbackData)[0];
-  $arg1 = explode(' ', $callbackData)[1];
-  $arg2 = explode(' ', $callbackData)[2].' '.explode(' ', $callbackData)[3].' '.explode(' ', $callbackData)[4];
+  $command = explode('_', $callbackData)[0];
+  $arg1 = explode('_', $callbackData)[1];
+  $arg2 = explode('_', $callbackData)[2];
   switch($command) {
     case '/short':
       printResult($callbackId, $arg1, $arg2, 10);

@@ -86,7 +86,7 @@ function printResult ($chatId, $short, $long, $max) {
     $msg = $resp['print_no_info'];
   if(count($departures) == 10) {
     $but[] = array(array('text' => $resp['show_more'],
-      'callback_data' => urlencode('/printLongResult '.$short.' '.$long)));
+      'callback_data' => urlencode('/printLongResult_'.$short.'_'.$long)));
     inlineKeys($but, $chatId, $resp['print_dep_for'].$long."\n".$msg);
   }//if
   else
