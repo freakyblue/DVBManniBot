@@ -45,7 +45,9 @@ function apiRequest ($methode) {
 function getStations ($input) {
   global $dbc;
   $stations = [];
-  $dbResult = @mysqli_query($dbc, 'SELECT * FROM `bot_DVBManniBot_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8');
+  $dbResult = @mysqli_query(
+    $dbc, 'SELECT * FROM `bot_DVBManniBot_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8'
+  );
   while ($result = mysqli_fetch_array($dbResult))
     array_push($stations, array($result['short'], $result['station']));
   return $stations;
@@ -53,13 +55,15 @@ function getStations ($input) {
 
 function inlineKeys ($buttons, $chatId, $msg) {
   $keyboard = json_encode(array('inline_keyboard' => $buttons));
-  apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).'&reply_markup='.$keyboard);
+  apiRequest('sendmessage?parse_mode=Markdown&chat_id='.$chatId.'&text='.urlencode($msg).
+    '&reply_markup='.$keyboard);
 }//inlineKeys
 
 function isStationShort ($input) {
   global $dbc;
-  return mysqli_fetch_array(@mysqli_query($dbc, 'SELECT count(*) FROM `bot_DVBManniBot_stations` WHERE `short` = "'
-    .$input.'"'))[0];
+  return mysqli_fetch_array(@mysqli_query($dbc,
+    'SELECT count(*) FROM `bot_DVBManniBot_stations` WHERE `short` = "'.$input.'"'
+  ))[0];
 }//isStationShort
 
 function keyboard ($keys, $text, $chatId) {
@@ -70,7 +74,9 @@ function keyboard ($keys, $text, $chatId) {
 function printResult ($chatId, $short, $long, $max) {
   global $dbc, $resp;
   $departures = json_decode(file_get_contents(
-    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim='.$max.'&hst='.urlencode($short)), TRUE);
+    'http://widgets.vvo-online.de/abfahrtsmonitor/Abfahrten.do?vz=0&lim='.$max.
+    '&hst='.urlencode($short)
+  ), TRUE);
   if ($long == '')
     $long = mysqli_fetch_array(@mysqli_query($dbc,
       'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.$short.'"'))['station'];
@@ -81,7 +87,8 @@ function printResult ($chatId, $short, $long, $max) {
   $lenNo = min(4, $lenNo);
   $lenDest = min(17, $lenDest);
   foreach ($departures as $departure)
-    $msg .= '`'.addSpace($departure[0], ($lenNo + 1)).addSpace($departure[1], ($lenDest + 1)).$departure[2].'`'."\n";
+    $msg .= '`'.addSpace($departure[0], ($lenNo + 1)).
+      addSpace($departure[1], ($lenDest + 1)).$departure[2].'`'."\n";
   if(count($departures) == 0)
     $msg = $resp['print_no_info'];
   if(count($departures) == 10) {
@@ -101,7 +108,9 @@ function removeMyStation ($chatId, $short) {
   if (in_array($short, explode(' ', $allStations))) {
     $allStations = trim(str_replace($short, '', $allStations));
     $allStations = preg_replace('/\s\s+/', ' ', $allStations);
-    @mysqli_query($dbc, 'UPDATE `bot_DVBManniBot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id` ='.$chatId);
+    @mysqli_query($dbc,
+      'UPDATE `bot_DVBManniBot_user` SET `myStations` = "'.$allStations.'" WHERE `chat_id`='.$chatId
+    );
     userKeys ($chatId, $resp['rm_succes']);
   }//if
   else sendMsg ($chatId, $resp['rm_not_in'], '');
