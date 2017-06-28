@@ -73,6 +73,10 @@ if ($chatId) {  //to hide warnings from website
       }//if
       else sendMsg($chatId, $resp['not_manni'],'');
       break;
+    //send line map as img
+    case '/plan':
+      sendPlan($chatId);
+      break;
     //to contact the bot admin
     case '/contact':
       if (count(explode(' ', $inputMsg)) == 1)
