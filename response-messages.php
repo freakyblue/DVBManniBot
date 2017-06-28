@@ -1,6 +1,8 @@
 <?php
 $resp['start'] = 'Hallo '.$senderFirstName.PHP_EOL.
-  'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.';
+  'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.'.
+  PHP_EOL.
+  'Bei /help werden dir alle Funktionen dieses Bots aufgelistet.';
 
 $resp['help'] = 'Hallo '.$senderFirstName.PHP_EOL.
   'Wobei brauchen Sie Hilfe?'.PHP_EOL.PHP_EOL.
