@@ -9,6 +9,7 @@ $resp['help'] = 'Hallo '.$senderFirstName.PHP_EOL.
   '- Mit /addmystation können Sie eine Haltestelle zu Ihrer persönlichen Schnellauswahl hinzufügen.'
   .PHP_EOL.
   '- Mit /removemystation können Sie eine Haltestelle von Ihrer Schnellauswahl entfernen.'.PHP_EOL.
+  '- Mit /plan bekommen Sie den Liniennetzplan als Bild geschickt.'.PHP_EOL.
   '- Mit /keys werden die Schnellauswahltasten aktualisiert eingeblendet.'.PHP_EOL.
   '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob
   loswerden.'.PHP_EOL.PHP_EOL.
