@@ -129,6 +129,18 @@ function sendMsg ($chatId, $msg, $mode) {
   apiRequest('sendmessage?parse_mode='.$mode.'&chat_id='.$chatId.'&text='.urlencode($msg));
 }//sendMsg
 
+function sendPlan ($chatId) {
+  global $website;
+  $photo = new CURLFile('plan.jpg', 'image/jpg', 'plan.jpg');
+  $ch = curl_init($website.'/sendPhoto');
+  curl_setopt($ch, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch, CURLOPT_POST, TRUE);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, array('chat_id' => $chatId, 'photo' => $photo));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
+  curl_exec($ch);
+  curl_close($ch);
+}//sendPlan
+
 function userKeys ($chatId, $msg) {
   global $dbc;
   $db = explode(' ', mysqli_fetch_array(@mysqli_query(
