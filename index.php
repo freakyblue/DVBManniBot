@@ -77,6 +77,13 @@ if ($chatId) {  //to hide warnings from website
     case '/plan':
       sendPlan($chatId);
       break;
+    //to get statistics
+    case '/stats':
+      if ($chatId == $contactId) {
+        statistics($chatId);
+      }//if
+      else sendMsg($chatId, $resp['not_manni'],'');
+      break;
     //to contact the bot admin
     case '/contact':
       if (count(explode(' ', $inputMsg)) == 1)

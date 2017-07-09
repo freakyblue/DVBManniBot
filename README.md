@@ -8,6 +8,9 @@ DVB-Web-API.
 
 ![Screenshot](/imgs/screenshot.jpg)
 
+As the screenshot shows, you can ask for a station and immediately the bot answers with a list of
+trains, trams and buses, which depart in the next minutes.
+
 ## Links
 - [Telegram](https://telegram.org/) (The App)
 - [TelegramBot](https://t.me/DVBManniBot) (The Bot itself.)
