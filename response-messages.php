@@ -1,4 +1,7 @@
 <?php
+$input = json_decode(file_get_contents('php://input'), TRUE);
+$senderFirstName = $input['message']['from']['first_name'];
+
 $resp['start'] = 'Hallo '.$senderFirstName.PHP_EOL.
   'Ich bin Manni und ich helfe dir gerne bei den Abfahrtszeiten von Bussen und Bahnen der DVB.'.
   PHP_EOL.
@@ -26,7 +29,7 @@ $resp['add_succes'] = 'Erfolgreich hinzugefügt.';
 $resp['contact_no_input'] = 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.
 'Zum Beispiel'.PHP_EOL.
 '/contact Cooler Bot Manni ;)';
-$resp['contact_thx'] = 'Danke '.$senderFirstName.' für deine Nachricht.'.PHP_EOL.
+$resp['contact_thx'] = 'Danke '.$senderFirstName.' für deine Nachricht.';
 
 
 $resp['keys_refreshed'] = 'Auswahl aktualisiert.';
