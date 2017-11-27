@@ -75,7 +75,7 @@ if ($chatId) {  //to hide warnings from website
       break;
     //send line map as img
     case '/plan':
-      sendPlan($chatId);
+      sendPlanBig($chatId);
       break;
     //to get statistics
     case '/stats':
