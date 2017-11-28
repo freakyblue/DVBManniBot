@@ -26,12 +26,13 @@ if ($chatId) {  //to hide warnings from website
     case '/help':
       sendMsg($chatId, $resp['help'], '');
       break;
-    case '/addmystation':
+    //be /addmystation
+    case '/add':
       $arg1 = explode(' ', $inputMsg)[1];
       if (!isset($arg1)) {
         sendMsg($chatId, $resp['add_no_input'], '');
         break;
-      }
+      }//if
       if (isStationShort($arg1)) addMyStation($chatId, $arg1);
       else {
         $possibleStations = getStations($arg1);
