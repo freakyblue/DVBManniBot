@@ -26,7 +26,7 @@ if ($chatId) {  //to hide warnings from website
     case '/help':
       sendMsg($chatId, $resp['help'], '');
       break;
-    //be /addmystation
+    //before /addmystation
     case '/add':
       $arg1 = explode(' ', $inputMsg)[1];
       if (!isset($arg1)) {
@@ -50,7 +50,8 @@ if ($chatId) {  //to hide warnings from website
         else sendMsg($chatId, $resp['no_station_match'], '');
       }//else
       break;
-    case '/removemystation':
+    //before /removemystation
+    case '/remove':
       removeMyStation($chatId, explode(' ', $inputMsg)[1]);
       break;
     case '/keys':
