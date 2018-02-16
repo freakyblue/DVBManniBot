@@ -91,8 +91,9 @@ if ($chatId) {  //to hide warnings from website
       if (count(explode(' ', $inputMsg)) == 1)
         sendMsg($chatId, $resp['contact_no_input'],'');
       else {
-        sendMsg($contactId, 'from @'.$senderUsername.' ('.$senderFirstName.' '.$senderLastName.') '.
-          $chatId.PHP_EOL.$inputMsg,''
+        sendMsg($contactId, 'from @'.$senderUsername.
+        ' ('.$senderFirstName.' '.$senderLastName.') '.
+        '`'.$chatId.'`'.PHP_EOL.$inputMsg, 'Markdown'
         );
         sendMsg($chatId, $resp['contact_thx'],'');
       }//else
