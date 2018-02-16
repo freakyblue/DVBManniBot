@@ -99,6 +99,15 @@ if ($chatId) {  //to hide warnings from website
       }//else
       break;
     default:
+      //if location is send
+      if (isset($input['message']['location'])) {
+        locationResult(
+          $chatId,
+          $input['message']['location']['latitude'],
+          $input['message']['location']['longitude']
+        );
+        break;
+      }//if
       //if station-short is entered
       if (isStationShort($inputMsg)) printResult($chatId, $inputMsg, '', 10);
       else {

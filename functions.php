@@ -71,6 +71,18 @@ function keyboard ($keys, $text, $chatId) {
     '&reply_markup='.json_encode($keys));
 }//keyboard
 
+function locationResult ($chatId, $latitude, $longitude) {
+  global $dbc;
+  $query = @mysqli_query(
+    $dbc,
+    'SELECT short FROM `bot_DVBManniBot_stations`
+    ORDER BY ABS(`latitude` - '.$latitude.') + ABS(`longitude` - '.$longitude.') LIMIT 3'
+  );
+  while ($station = mysqli_fetch_array($query)) {
+    printResult($chatId, $station['short'], '', 8);
+  }//while
+}//locationResult
+
 function printResult ($chatId, $short, $long, $max) {
   global $dbc, $resp;
   $departures = json_decode(file_get_contents(
