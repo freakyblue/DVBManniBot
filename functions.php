@@ -106,10 +106,10 @@ function printResult ($chatId, $short, $long, $max) {
   if(count($departures) == 10) {
     $but[] = array(array('text' => $resp['show_more'],
       'callback_data' => urlencode('/printLongResult_'.$short.'_'.$long)));
-    inlineKeys($but, $chatId, $resp['print_dep_for'].$long."\n".$msg);
+    inlineKeys($but, $chatId, $resp['print_dep_for']."*".$long."*\n".$msg);
   }//if
   else
-    sendMsg ($chatId, $resp['print_dep_for'].$long."\n".$msg, 'Markdown');
+    sendMsg ($chatId, $resp['print_dep_for']."*".$long."*\n".$msg, 'Markdown');
 }//printResult
 
 function removeMyStation ($chatId, $short) {
