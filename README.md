@@ -3,19 +3,20 @@
 
 # DVBManniBot
 
-A [TelegramBot](https://t.me/DVBManniBot) for departure times of the public transport in Dresden (Germany). It uses the
+A [Telegram bot](https://t.me/DVBManniBot) for departure times of the public transport in Dresden (Germany). It uses the
 DVB-Web-API.
 
 ![Screenshot](/imgs/screenshot.jpg)
 
 As the screenshot shows, you can ask for a station and immediately the bot answers with a list of
-trains, trams and buses, which depart in the next minutes.
+trains, trams and buses, which depart in the next minutes. If you send your location, the bot will search for
+you the next three stations and display the according results.
 
 ## Links
 - [Telegram](https://telegram.org/) (The App)
-- [TelegramBot](https://t.me/DVBManniBot) (The Bot itself.)
-- [DVB](https://www.dvb.de/) (The public transport company.)
+- [Telegram bot](https://t.me/DVBManniBot) (The bot itself)
+- [DVB](https://www.dvb.de/) (The public transport company)
 
 ## Contributing
 
-Feel free to fork, report bugs or open pull requests.
+Feel free to fork, report bugs or open pull r
