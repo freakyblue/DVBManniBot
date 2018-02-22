@@ -19,4 +19,4 @@ you the next three stations and display the according results.
 
 ## Contributing
 
-Feel free to fork, report bugs or open pull r
+Feel free to fork, report bugs or open pull requests.
