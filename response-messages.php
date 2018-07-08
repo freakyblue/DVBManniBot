@@ -18,7 +18,7 @@ $resp['help'] = 'Hallo '.$senderFirstName.PHP_EOL.
   '- Mit /keys werden die Schnellauswahltasten aktualisiert eingeblendet.'.PHP_EOL.
   '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob
   loswerden.'.PHP_EOL.PHP_EOL.
-  'P.S.: Ich freue mich sehr, wennn Sie diesen Bot Freuden weiterempfehlen.'.PHP_EOL.
+  'P.S.: Ich freue mich sehr, wennn Sie diesen Bot Freunden weiterempfehlen.'.PHP_EOL.
   'Dein Manni';
 
 $resp['add_no_input'] = 'Bitte geben Sie eine Haltestelle  an.'.PHP_EOL.'z.B. /add HBF';
