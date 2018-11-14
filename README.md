@@ -20,3 +20,4 @@ you the next three stations and display the according results.
 ## Contributing
 
 Feel free to fork, report bugs or open pull requests.
+Please notify me, if you want to use parts of the code for your own bot.
