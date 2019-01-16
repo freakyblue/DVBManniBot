@@ -68,7 +68,6 @@ if ($chatId) {  //to hide warnings from website
       else sendMsg($chatId, $resp['not_manni'],'');
       break;
     //to answer as bot (for admmin only)
-    /*
     case '/sendAll':
       if ($chatId == $contactId) {
         $msg = str_replace('/sendAll ', '', $inputMsg);
@@ -76,7 +75,6 @@ if ($chatId) {  //to hide warnings from website
       }//if
       else sendMsg($chatId, $resp['not_manni'],'');
       break;
-      */
     //send line map as img
     case '/plan':
       sendPlan($chatId);

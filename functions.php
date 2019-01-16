@@ -42,9 +42,15 @@ function apiRequest ($methode) {
   return file_get_contents($GLOBALS[website].'/'.$methode);
 }//apiRequest
 
+function convertSpecialSigns ($inputTxt) {
+  $resultTxt = str_replace('ß', 'ss', $inputTxt);
+  return $resultTxt;
+}//convertSpecialSigns
+
 function getStations ($input) {
   global $dbc;
   $stations = [];
+  //$input = convertSpecialSigns($input);
   $dbResult = @mysqli_query(
     $dbc, 'SELECT * FROM `bot_DVBManniBot_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8'
   );
@@ -131,9 +137,10 @@ function removeMyStation ($chatId, $short) {
 function sendAll ($chatId, $msg) {
   global $dbc, $contactId;
   if ($chatId == $contactId) {
-    $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `bot_DVBManniBot_user` WHERE 1');
-    while ($currChatId = mysqli_fetch_array($dbResult))
+    $dbResult = @mysqli_query($dbc, 'SELECT `chat_id` FROM `bot_DVBManniBot_testuser` WHERE 1');
+    while ($currChatId = mysqli_fetch_array($dbResult)) {
       sendMsg($currChatId['chat_id'], $msg, '');
+    }//while
   }//if
 }//sendAll
 
