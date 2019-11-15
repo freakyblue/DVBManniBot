@@ -79,6 +79,10 @@ if ($chatId) {  //to hide warnings from website
     case '/plan':
       sendPlan($chatId);
       break;
+    //send list of all stations as pdf
+    case '/list':
+      sendStationList($chatId);
+      break;
     //to get statistics
     case '/stats':
       if ($chatId == $contactId) {
