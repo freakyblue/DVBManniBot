@@ -15,6 +15,7 @@ $resp['help'] = 'Hallo '.$senderFirstName.PHP_EOL.
   .PHP_EOL.
   '- Mit /remove können Sie eine Haltestelle von Ihrer Schnellauswahl entfernen.'.PHP_EOL.
   '- Mit /plan bekommen Sie den Liniennetzplan als Bild geschickt.'.PHP_EOL.
+  '- Mit /list bekommen Sie ein PDF mit allen Haltestellen und entsprechenden Kürzeln geschickt.'.PHP_EOL.
   '- Mit /keys werden die Schnellauswahltasten aktualisiert eingeblendet.'.PHP_EOL.
   '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob
   loswerden.'.PHP_EOL.PHP_EOL.
