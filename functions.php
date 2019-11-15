@@ -134,6 +134,7 @@ function removeMyStation ($chatId, $short) {
   else sendMsg ($chatId, $resp['rm_not_in'], '');
 }//removeMyStation
 
+/*
 function sendAll ($chatId, $msg) {
   global $dbc, $contactId;
   if ($chatId == $contactId) {
@@ -143,6 +144,7 @@ function sendAll ($chatId, $msg) {
     }//while
   }//if
 }//sendAll
+*/
 
 function sendMsg ($chatId, $msg, $mode) {
   apiRequest('sendmessage?parse_mode='.$mode.'&chat_id='.$chatId.'&text='.urlencode($msg));
