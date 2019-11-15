@@ -160,6 +160,18 @@ function sendPlan ($chatId) {
   curl_close($ch);
 }//sendPlan
 
+function sendStationList ($chatId) {
+  global $website;
+  $pdf = new CURLFile('stationList.pdf', 'application/pdf', 'stationList.pdf');
+  $ch = curl_init($website.'/sendDocument');
+  curl_setopt($ch, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch, CURLOPT_POST, TRUE);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, array('chat_id' => $chatId, 'document' => $pdf));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, FALSE);
+  curl_exec($ch);
+  curl_close($ch);
+}//sendStationList
+
 function userKeys ($chatId, $msg) {
   global $dbc;
   $db = explode(' ', mysqli_fetch_array(@mysqli_query(
