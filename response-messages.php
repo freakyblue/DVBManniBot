@@ -20,17 +20,17 @@ $resp['help'] = 'Hallo '.$senderFirstName.PHP_EOL.
   '- Über /contact können Sie mich direkt kontaktieren und Fragen stellen, Kritik oder Lob
   loswerden.'.PHP_EOL.PHP_EOL.
   'P.S.: Ich freue mich sehr, wennn Sie diesen Bot Freunden weiterempfehlen.'.PHP_EOL.
-  'Dein Manni';
+  'Ihr Manni';
 
 $resp['add_no_input'] = 'Bitte geben Sie eine Haltestelle  an.'.PHP_EOL.'z.B. /add HBF';
 $resp['add_already_in'] = 'Diese Haltestelle befindet sich bereits in Ihrer Auswahl.';
 $resp['add_too_much'] = 'Es befinden sich zu viele Haltestellen in Ihrer Auswahl.';
 $resp['add_succes'] = 'Erfolgreich hinzugefügt.';
 
-$resp['contact_no_input'] = 'Schreibe deine Nachricht hinter /contact'.PHP_EOL.
+$resp['contact_no_input'] = 'Schreiben Sie Ihre Nachricht hinter /contact'.PHP_EOL.
 'Zum Beispiel'.PHP_EOL.
 '/contact Cooler Bot Manni ;)';
-$resp['contact_thx'] = 'Danke '.$senderFirstName.' für deine Nachricht.';
+$resp['contact_thx'] = 'Danke '.$senderFirstName.' für Ihre Nachricht.';
 
 
 $resp['keys_refreshed'] = 'Auswahl aktualisiert.';
@@ -41,7 +41,7 @@ $resp['rm_not_in'] = 'Dies Haltestelle befindet sich nicht in Ihrer Auswahl.';
 $resp['not_manni'] = 'Dieses Feature ist Mannis vorbehalten.'.PHP_EOL.
   'Wenn du an diesem Bot mitentwickeln möchtest, dann schreibe mir per /contact';
 $resp['no_station_match'] = 'Ich konnte keine passende Haltestelle finden.';
-  'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Dein Manni';
+  'Ich werde mich schnellstmöglich um die Bearbeitung kümmern.'.PHP_EOL.'Ihr Manni';
 $resp['suggest'] = 'Meinten Sie?';
 $resp['show_more'] = 'mehr anzeigen';
 
