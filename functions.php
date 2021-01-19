@@ -55,7 +55,7 @@ function getStations ($input) {
     $dbc, 'SELECT * FROM `bot_DVBManniBot_stations` WHERE `station` LIKE "%'.$input.'%" LIMIT 8'
   );
   while ($result = mysqli_fetch_array($dbResult))
-    array_push($stations, array($result['short'], $result['station']));
+    array_push($stations, array($result['short'], utf8_encode($result['station'])));
   return $stations;
 }//getStations
 
@@ -96,8 +96,8 @@ function printResult ($chatId, $short, $long, $max) {
     '&hst='.urlencode($short)
   ), TRUE);
   if ($long == '')
-    $long = mysqli_fetch_array(@mysqli_query($dbc,
-      'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.$short.'"'))['station'];
+    $long = utf8_encode(mysqli_fetch_array(@mysqli_query($dbc,
+      'SELECT * FROM `bot_DVBManniBot_stations` WHERE `short`="'.$short.'"'))['station']);
   foreach ($departures as $departure) {
     $lenNo = max(strlen($departure[0]), $lenNo);
     $lenDest = max(strlen($departure[1]), $lenDest);
